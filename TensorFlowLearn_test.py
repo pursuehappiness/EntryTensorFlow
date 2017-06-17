@@ -32,6 +32,39 @@ class TensorFlowTestCase(unittest.TestCase):
 		for dati in range(3):
 			self.assertEqual(list3[dati],ret[dati])
 
+	def test_const_add_2dimarray_1dimarray_in_row(self):
+		array_2dim = [[1,2,3],[4,5,6]]
+		array_1dim = [101,102,103]
+
+		ret = TensorFlowConstAddOneDimeWithTwoDime(array_2dim,array_1dim)
+
+		for i in range(2):
+			for j in range(3):
+				array_2dim[i][j] += array_1dim[j]
+				self.assertEqual(array_2dim[i][j],ret[i][j])
+
+	def test_const_add_2dimarray_1dimarray_in_col(self):
+		array_2dim = [[1,2,3],[4,5,6]]
+		array_1dim = [[101],[103]]
+
+		ret = TensorFlowConstAddOneDimeWithTwoDime(array_2dim,array_1dim)
+
+		for i in range(2):
+			for j in range(3):
+				array_2dim[i][j] += array_1dim[i][0]
+				self.assertEqual(array_2dim[i][j],ret[i][j],'assert [%d][%d]'% (i,j,))
+
+	def test_const_add_2dim_array(self):
+		array_2dim1 = [[1,2,3],[4,5,6]]
+		array_2dim2 = [[11,12,13],[24,52,62]]
+		
+		ret = TensorFlowConstAddTwoObj(array_2dim1,array_2dim2)
+
+		for i in range(2):
+			for j in range(3):
+				value_ij = array_2dim1[i][j]+array_2dim2[i][j]
+				self.assertEqual(value_ij,ret[i][j])
+
 
 if __name__ == '__main__':
 	unittest.main(warnings='ignore')
