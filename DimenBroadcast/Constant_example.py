@@ -49,7 +49,9 @@ def TensorFlowConstAddOneDimeWithTwoDime(Array_2Dim,Array_1Dim):
 		return session.run(add_op)
 
 def TensorFlowConstShape(value):
-	return tf.shape(2,3,value)
+	a = tf.constant([1,2,3,4,5,6],shape=[2,3])
+	with tf.Session() as session:
+		return session.run(a)
 
 
 if __name__ == '__main__':
