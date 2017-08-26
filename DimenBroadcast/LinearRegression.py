@@ -1,35 +1,39 @@
+#simpler the code with tf.estimator
+
 import tensorflow as tf 
+import numpy as np 
 
-#model parameters
-W = tf.Variable([.3],dtype = tf.float32)
-b = tf.Variable([-.3],dtype=tf.float32)
+#declare list of feature
+feature_columns = [tf.feature_column.numeric_column("x",shape=[1])]
 
-#model input and output
-x = tf.placeholder(tf.float32)
-y = tf.placeholder(tf.float32)
+#an estimator is the front end to incoke trianing 
+#there are many predefined types like linear regression,
+#linear classification, and many neural network classifiers and
+#regression
+estimator = tf.estimator.LinearRegressor(feature_columns=feature_columns)
 
-linear_model = W*x + b
 
-#loss
-loss = tf.reduce_sum(tf.square(linear_model-y))#sum of the squres diff
-#optimizier
-
-op = tf.train.GradientDescentOptimizer(0.01)
-train = op.minimize(loss)
 
 #train sets
-x_train = [1,2,3,4]
-y_train = [0,-1,-2,-3]
+x_train = np.array([1,2,3,4])
+y_train = np.array([0,-1,-2,-3])
+x_eval = np.array([2., 5., 8., 1.])
+y_eval = np.array([-1.01, -4.1, -7, 0.])
 
-#train loop
-init = tf.global_variables_initializer()
-sess = tf.Session()
-sess.run(init)
+input_fn = tf.estimator.inputs.numpy_input_fn(
+	{"x":x_train},y_train,batch_size = 4,num_epochs = None,shuffle = True)
 
-for i in range(1000):
-	sess.run(train,{x:x_train, y:y_train})
+train_input_fn = tf.estimator.inputs.numpy_input_fn(
+	{"x": x_train}, y_train, batch_size=4, num_epochs=1000, shuffle=False)
+eval_input_fn = tf.estimator.inputs.numpy_input_fn(
+	{"x": x_eval}, y_eval, batch_size=4, num_epochs=1000, shuffle=False)
 
-#evaluate training accuracy
+# We can invoke 1000 training steps by invoking the  method and passing the
+# training data set.
+estimator.train(input_fn=input_fn, steps=1000)
 
-curr_W, curr_b,curr_loss = sess.run([W,b,loss],{x:x_train,y:y_train})
-print("W:%s b:%s loss: %s"% (curr_W,curr_b,curr_loss))
+# Here we evaluate how well our model did.
+train_metrics = estimator.evaluate(input_fn=train_input_fn)
+eval_metrics = estimator.evaluate(input_fn=eval_input_fn)
+print("train metrics: %r"% train_metrics)
+print("eval metrics: %r"% eval_metrics)
